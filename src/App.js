@@ -1,20 +1,32 @@
-import { CurrentUserLoader } from './CurrentUserLoader';
-import { UserLoader } from './UserLoader';
-import { ResourceLoader } from './ResourceLoader';
-import { ProductInfo } from './ProductInfo';
-import { UserInfo } from './UserInfo';
-
+import { DataSourceLoader } from "./DataSourceLoader";
+import axios from "axios";
+import { UserInfo } from "./UserInfo";
+const getServiceData = (url) => async () => {
+  const response = await axios.get(url);
+  return response.data;
+};
+const getLocalStorageData=key=>()=>{
+	return localStorage.getItem(key)
+}
+const TextComponent=({message})=><h1>{message}</h1>
 function App() {
-	return (
-		<>
-		<ResourceLoader resourceUrl="/users/123" resourceName="user">
-			<UserInfo />
-		</ResourceLoader>
-		<ResourceLoader resourceUrl="/products/1234" resourceName="product">
-			<ProductInfo />
-		</ResourceLoader>
-		</>
-	);
+  return (
+    <>
+      <DataSourceLoader
+        getDataFunc={getServiceData("/users/123")}
+        resourceName="user"
+      >
+        <UserInfo />
+      </DataSourceLoader>
+
+	  <DataSourceLoader
+        getDataFunc={getLocalStorageData("message")}
+        resourceName="message"
+      >
+        <TextComponent />
+      </DataSourceLoader>
+    </>
+  );
 }
 
 export default App;
